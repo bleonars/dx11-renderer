@@ -3,7 +3,6 @@
 //
 // macros
 //
-
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
 #define _HAS_EXCEPTIONS 0
@@ -26,6 +25,8 @@ using ulong_t = unsigned long;
 //
 #include <Windows.h>
 
+#include <cstdint>
+
 //
 // dependencies
 //
@@ -39,4 +40,3 @@ using ulong_t = unsigned long;
 //
 // misc
 //
-
