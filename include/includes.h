@@ -31,6 +31,11 @@ using ulong_t = unsigned long;
 
 #include <cstdint>
 #include <array>
+#include <utility>
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <numbers>
 
 //
 // directx

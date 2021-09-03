@@ -8,7 +8,7 @@ void Environment::create( HINSTANCE instance, int cmd_show ) {
 
     create_directx();
 
-    m_renderer.create();
+    m_renderer.create( m_dev, m_dev_ctx );
 }
 
 void Environment::destroy() {
@@ -32,7 +32,12 @@ uint32_t Environment::perform() {
 
         // perform rendering functions
         else {
-            m_dev_ctx->ClearRenderTargetView( m_render_target, D3DXCOLOR( 0.f, 0.f, 0.f, 1.f ) );
+            m_dev_ctx->ClearRenderTargetView( m_render_target, Color::white().data() );
+
+            m_renderer.draw_filled_rect( 50.f, 50.f, 50.f, 50.f, Color::red() );
+            m_renderer.draw_outlined_filled_rect( 200.f, 200.f, 100.f, 100.f, Color::green(), Color::black() );
+            m_renderer.draw_line( 320.f, 320.f, 350.f, 350.f, Color::purple(), 4.f );
+            m_renderer.draw_filled_circle( 340.f, 240.f, 20.f, Color::black() );
 
             m_renderer.perform();
 
