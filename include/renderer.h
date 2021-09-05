@@ -12,7 +12,10 @@ namespace dx {
         /**
          * @brief The constructor for the RenderStateBackup class
         */
-        NOINLINE RenderStateBackup()  {
+        NOINLINE RenderStateBackup() : m_dev_ctx{}, m_scissor_rects_count {}, m_viewports_count{}, m_scissor_rects{}, m_viewports{}, m_rasterizer_state{}, m_blend_state{},
+            m_blend_factor{}, m_sample_mask{}, m_stencil_ref{}, m_depth_stencil_state{}, m_shader_resource{}, m_sampler{}, m_pixel_shader{}, m_vertex_shader{}, m_geometry_shader{},
+            m_ps_instance_count{}, m_vs_instance_count{}, m_gs_instance_count{}, m_ps_instances{}, m_vs_instances{}, m_gs_instances{}, m_primitive_topology{}, 
+            m_index_buffer{}, m_vertex_buffer{}, m_constant_buffer{}, m_index_buffer_offset{}, m_vertex_buffer_stride{}, m_vertex_buffer_offset{}, m_index_buffer_format{}, m_input_layout{} {
 
         }
 
@@ -29,7 +32,31 @@ namespace dx {
         NOINLINE void apply();
 
     private:
+        static constexpr size_t  MAX_D3D11_CLASS_INSTANCE = 256;
 
+        ID3D11DeviceContext      *m_dev_ctx;
+
+        size_t                   m_scissor_rects_count, m_viewports_count;
+        D3D11_RECT               m_scissor_rects[ D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE ];
+        D3D11_VIEWPORT           m_viewports[ D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE ];
+        ID3D11RasterizerState    *m_rasterizer_state;
+        ID3D11BlendState         *m_blend_state;
+        float                    m_blend_factor[ 4 ];
+        size_t                   m_sample_mask;
+        size_t                   m_stencil_ref;
+        ID3D11DepthStencilState  *m_depth_stencil_state;
+        ID3D11ShaderResourceView *m_shader_resource;
+        ID3D11SamplerState       *m_sampler;
+        ID3D11PixelShader        *m_pixel_shader;
+        ID3D11VertexShader       *m_vertex_shader;
+        ID3D11GeometryShader     *m_geometry_shader;
+        size_t                   m_ps_instance_count, m_vs_instance_count, m_gs_instance_count;
+        ID3D11ClassInstance      *m_ps_instances[ MAX_D3D11_CLASS_INSTANCE ], *m_vs_instances[ MAX_D3D11_CLASS_INSTANCE ], *m_gs_instances[ MAX_D3D11_CLASS_INSTANCE ];
+        D3D11_PRIMITIVE_TOPOLOGY m_primitive_topology;
+        ID3D11Buffer             *m_index_buffer, *m_vertex_buffer, *m_constant_buffer;
+        size_t                   m_index_buffer_offset, m_vertex_buffer_stride, m_vertex_buffer_offset;
+        DXGI_FORMAT              m_index_buffer_format;
+        ID3D11InputLayout        *m_input_layout;
     };
 
     /**

@@ -389,9 +389,115 @@ bool RenderStateBackup::capture( ID3D11DeviceContext *dev_ctx ) {
     if ( !dev_ctx )
         return false;
 
+    m_dev_ctx = dev_ctx;
+
+    // save viewports
+    m_scissor_rects_count = m_viewports_count = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
+    m_dev_ctx->RSGetScissorRects( &m_scissor_rects_count, m_scissor_rects );
+    m_dev_ctx->RSGetViewports( &m_viewports_count, m_viewports );
+
+    // save rasterizer, blend and stencil state
+    m_dev_ctx->RSGetState( &m_rasterizer_state );
+    m_dev_ctx->OMGetBlendState( &m_blend_state, m_blend_factor, &m_sample_mask );
+    m_dev_ctx->OMGetDepthStencilState( &m_depth_stencil_state, &m_stencil_ref );
+
+    // save samplers
+    m_dev_ctx->PSGetSamplers( 0, 1, &m_sampler );
+
+    // save shaders
+    m_ps_instance_count = m_vs_instance_count = m_gs_instance_count = MAX_D3D11_CLASS_INSTANCE;
+    m_dev_ctx->PSGetShaderResources( 0, 1, &m_shader_resource );
+    m_dev_ctx->PSGetShader( &m_pixel_shader, m_ps_instances, &m_ps_instance_count );
+    m_dev_ctx->VSGetShader( &m_vertex_shader, m_vs_instances, &m_vs_instance_count );
+    m_dev_ctx->GSGetShader( &m_geometry_shader, m_gs_instances, &m_gs_instance_count );
+
+    // save topology
+    m_dev_ctx->IAGetPrimitiveTopology( &m_primitive_topology );
+
+    // save input layout
+    m_dev_ctx->IAGetInputLayout( &m_input_layout );
+
+    // save buffers
+    m_dev_ctx->VSGetConstantBuffers( 0, 1, &m_constant_buffer );
+    m_dev_ctx->IAGetVertexBuffers( 0, 1, &m_vertex_buffer, &m_vertex_buffer_stride, &m_vertex_buffer_offset );
+    m_dev_ctx->IAGetIndexBuffer( &m_index_buffer, &m_index_buffer_format, &m_index_buffer_offset );
+
     return true;
 }
 
 void RenderStateBackup::apply() {
+    // set viewports
+    m_dev_ctx->RSSetScissorRects( m_scissor_rects_count, m_scissor_rects );
+    m_dev_ctx->RSSetViewports( m_viewports_count, m_viewports );
 
+    // set rasterizer, blend, and stencil state
+    m_dev_ctx->RSSetState( m_rasterizer_state ); 
+    if ( m_rasterizer_state )
+        m_rasterizer_state->Release();
+
+    m_dev_ctx->OMSetBlendState( m_blend_state, m_blend_factor, m_sample_mask );
+    if ( m_blend_state ) 
+        m_blend_state->Release();
+
+    m_dev_ctx->OMSetDepthStencilState( m_depth_stencil_state, m_stencil_ref );
+    if ( m_depth_stencil_state ) 
+        m_depth_stencil_state->Release();
+
+    // set samplers
+    m_dev_ctx->PSSetSamplers( 0, 1, &m_sampler ); 
+    if ( m_sampler ) 
+        m_sampler->Release();
+
+    // set shaders
+    m_dev_ctx->PSSetShaderResources( 0, 1, &m_shader_resource );
+    if ( m_shader_resource )
+        m_shader_resource->Release();
+
+    m_dev_ctx->PSSetShader( m_pixel_shader, m_ps_instances, m_ps_instance_count );
+    if ( m_pixel_shader )
+        m_pixel_shader->Release();
+
+    m_dev_ctx->VSSetShader( m_vertex_shader, m_vs_instances, m_vs_instance_count );
+    if ( m_vertex_shader )
+        m_vertex_shader->Release();
+
+    m_dev_ctx->GSSetShader( m_geometry_shader, m_gs_instances, m_gs_instance_count );
+    if ( m_geometry_shader )
+        m_geometry_shader->Release();
+
+    for ( size_t i{}; i < m_ps_instance_count; ++i ) {
+        if ( m_ps_instances[ i ] )
+            m_ps_instances[ i ]->Release();
+    }
+
+    for ( size_t i{}; i < m_vs_instance_count; ++i ) {
+        if ( m_vs_instances[ i ] )
+            m_vs_instances[ i ]->Release();
+    }
+
+    for ( size_t i{}; i < m_gs_instance_count; ++i ) {
+        if ( m_gs_instances[ i ] )
+            m_gs_instances[ i ]->Release();
+    }
+
+    // set topology
+    m_dev_ctx->IASetPrimitiveTopology( m_primitive_topology );
+
+    // set input layout
+    m_dev_ctx->IASetInputLayout( m_input_layout ); 
+    if ( m_input_layout ) 
+        m_input_layout->Release();
+
+    // set buffers
+    m_dev_ctx->VSSetConstantBuffers( 0, 1, &m_constant_buffer );
+    if ( m_constant_buffer )
+        m_constant_buffer->Release();
+
+    m_dev_ctx->IASetVertexBuffers( 0, 1, &m_vertex_buffer, &m_vertex_buffer_stride, &m_vertex_buffer_offset );
+    if ( m_vertex_buffer ) 
+        m_vertex_buffer->Release();
+
+    m_dev_ctx->IASetIndexBuffer( m_index_buffer, m_index_buffer_format, m_index_buffer_offset );
+    if ( m_index_buffer )
+        m_index_buffer->Release();
 }
