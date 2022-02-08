@@ -168,9 +168,9 @@ namespace dx {
          * @param end end position
          * @param color rgba color
          * @param thickness pixel thickness
-         * @return 
         */
         NOINLINE void draw_line( const Vector2 &start, const Vector2 &end, const Color &color, const float thickness = 1.f );
+        
         /**
          * @brief This function draws a line of specific thickness
          * @param start_x start x-position
@@ -323,7 +323,7 @@ namespace dx {
         Vector2 m_screen_size; // current screen size
 
         RenderStateBackup m_render_state_backup; // render state backup
-        RenderList m_render_list;               // render list
+        RenderList m_render_list;                // render list
 
         /**
          * @brief This function draws the batched vertices
