@@ -43,17 +43,3 @@ using ulong_t = unsigned long;
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dx10.h>
-
-//
-// dependencies
-//
-
-
-//
-// globals
-//
-
-
-//
-// misc
-//
